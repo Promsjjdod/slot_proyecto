@@ -32,6 +32,10 @@ npm run dev
 
 Abre la URL local que muestra Vite. Las preferencias, historial y saldo de demo se guardan solo en el almacenamiento local del navegador; el menú permite reiniciar el saldo.
 
+### Android con Termux
+
+Clona el proyecto en `$HOME` dentro de Termux y ejecuta `./termux.sh`. El lanzador instala dependencias si faltan, inicia el servidor local y abre el navegador Android. [Guía de Termux](docs/termux.md).
+
 ## Comandos
 
 | Comando                               | Uso                                                 |
@@ -51,6 +55,7 @@ Abre la URL local que muestra Vite. Las preferencias, historial y saldo de demo 
 - [Diseño del juego](docs/game-design.md)
 - [Matemática del juego](docs/math.md)
 - [Guía de arte](docs/art-guide.md)
+- [Ejecutar en Android con Termux](docs/termux.md)
 - [Changelog](CHANGELOG.md)
 
 ## Demo publicada
