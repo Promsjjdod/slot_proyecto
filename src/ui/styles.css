@@ -1,0 +1,1476 @@
+:root {
+  color-scheme: dark;
+  font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  font-synthesis: none;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --ink: #f8f3e2;
+  --muted: #a9b7b4;
+  --gold: #f4d17a;
+  --gold-bright: #fff0b4;
+  --jade: #52d9aa;
+  --deep: #07171f;
+  --panel: rgba(7, 24, 31, 0.88);
+  --panel-light: rgba(20, 47, 54, 0.76);
+  --line: rgba(244, 209, 122, 0.35);
+  --mountain-bg: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body,
+#app {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+body {
+  min-height: 100vh;
+  background: #041016;
+  color: var(--ink);
+}
+button {
+  color: inherit;
+  font: inherit;
+}
+button:focus-visible {
+  outline: 2px solid #fff0b4;
+  outline-offset: 3px;
+}
+
+.game-shell {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  width: min(100%, 540px);
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: calc(12px + var(--safe-top)) 16px calc(12px + var(--safe-bottom));
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  background:
+    linear-gradient(180deg, rgba(5, 17, 24, 0.48), rgba(3, 13, 18, 0.72) 58%, rgba(3, 12, 16, 0.96)),
+    var(--mountain-bg) center 46% / cover fixed,
+    #071a22;
+  box-shadow: 0 0 80px rgba(4, 12, 16, 0.78);
+}
+.game-shell::before,
+.game-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+.game-shell::before {
+  opacity: 0.2;
+  background:
+    radial-gradient(ellipse at 50% 14%, rgba(85, 223, 189, 0.25), transparent 41%),
+    linear-gradient(90deg, rgba(4, 15, 19, 0.32), transparent 18%, transparent 82%, rgba(4, 15, 19, 0.35));
+}
+.game-shell::after {
+  background-image: radial-gradient(rgba(255, 242, 187, 0.11) 0.7px, transparent 0.7px);
+  background-size: 5px 5px;
+  opacity: 0.07;
+  mix-blend-mode: screen;
+}
+.game-shell[data-quality="balanced"] .ambient-glow {
+  opacity: 0.07;
+}
+.game-shell[data-quality="battery"] .ambient-glow,
+.game-shell[data-quality="battery"]::after {
+  display: none;
+}
+.game-shell[data-quality="battery"] .board-shell {
+  box-shadow:
+    0 0 0 2px rgba(64, 41, 22, 0.94),
+    0 0 0 3px rgba(237, 192, 102, 0.52),
+    0 4px 12px rgba(0, 0, 0, 0.48);
+}
+.ambient-glow {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  filter: blur(65px);
+  opacity: 0.13;
+}
+.ambient-glow-one {
+  top: 5%;
+  left: -160px;
+  background: #41d4bd;
+}
+.ambient-glow-two {
+  right: -180px;
+  bottom: 9%;
+  background: #d877fc;
+}
+
+.loading-screen {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 13px;
+  background: radial-gradient(ellipse at center, rgba(24, 63, 66, 0.98), rgba(4, 17, 23, 0.99) 65%);
+  transition:
+    opacity 0.65s ease,
+    visibility 0.65s ease;
+}
+.loading-screen.is-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+.loading-mark {
+  width: 66px;
+  height: 66px;
+  border: 1px solid rgba(246, 214, 137, 0.65);
+  color: var(--gold-bright);
+  display: grid;
+  place-items: center;
+  transform: rotate(45deg);
+  box-shadow:
+    0 0 28px rgba(230, 184, 88, 0.2),
+    inset 0 0 18px rgba(230, 184, 88, 0.12);
+  animation: mark-breathe 1.8s ease-in-out infinite;
+}
+.loading-mark span {
+  font-size: 25px;
+  transform: rotate(-45deg);
+  text-shadow: 0 0 18px #ffe99e;
+}
+.loading-brand {
+  margin: 8px 0 0;
+  font:
+    20px "Marcellus",
+    Georgia,
+    serif;
+  letter-spacing: 0.18em;
+  color: #fff1c5;
+}
+.loading-brand i {
+  color: #70e0ba;
+  font-style: normal;
+}
+.loading-track {
+  margin-top: 4px;
+  width: 146px;
+  height: 2px;
+  border-radius: 9px;
+  background: rgba(244, 209, 122, 0.2);
+  overflow: hidden;
+}
+.loading-track span {
+  display: block;
+  height: 100%;
+  width: 45%;
+  background: linear-gradient(90deg, transparent, var(--gold-bright), transparent);
+  animation: load-line 1.2s ease-in-out infinite;
+}
+.loading-screen small {
+  margin-top: 11px;
+  color: #aec9bd;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+}
+@keyframes load-line {
+  from {
+    transform: translateX(-130%);
+  }
+  to {
+    transform: translateX(340%);
+  }
+}
+@keyframes mark-breathe {
+  50% {
+    filter: drop-shadow(0 0 16px rgba(255, 219, 116, 0.65));
+    transform: rotate(45deg) scale(1.04);
+  }
+}
+
+.topbar {
+  min-height: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  z-index: 1;
+}
+.brand-lockup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink);
+  text-decoration: none;
+  min-width: 0;
+}
+.brand-emblem {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(244, 209, 122, 0.55);
+  background: linear-gradient(135deg, rgba(33, 79, 72, 0.86), rgba(15, 39, 43, 0.88));
+  transform: rotate(45deg);
+  box-shadow:
+    0 0 14px rgba(68, 210, 169, 0.12),
+    inset 0 0 10px rgba(244, 209, 122, 0.1);
+}
+.brand-emblem svg {
+  width: 34px;
+  height: 34px;
+  transform: rotate(-45deg);
+  fill: none;
+  stroke: #f0d17d;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.brand-emblem svg path:nth-child(2) {
+  fill: rgba(89, 217, 170, 0.15);
+}
+.brand-emblem svg circle {
+  fill: #f0d17d;
+  stroke: none;
+}
+.brand-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  white-space: nowrap;
+}
+.brand-copy strong {
+  font:
+    14px/1 "Marcellus",
+    Georgia,
+    serif;
+  letter-spacing: 0.08em;
+  color: #fff3d1;
+}
+.brand-copy strong i {
+  color: #78e4c2;
+  font-style: normal;
+}
+.brand-copy small {
+  color: rgba(239, 220, 163, 0.78);
+  letter-spacing: 0.2em;
+  font-size: 7px;
+  font-weight: 700;
+}
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.demo-badge {
+  max-width: 117px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 7px;
+  color: #d6e3db;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  background: rgba(2, 17, 22, 0.55);
+  border: 1px solid rgba(113, 198, 161, 0.27);
+  border-radius: 99px;
+  white-space: nowrap;
+}
+.demo-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #50d9a9;
+  box-shadow: 0 0 8px #50d9a9;
+  flex: 0 0 auto;
+}
+.icon-button,
+.language-toggle {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(246, 215, 135, 0.38);
+  background: rgba(7, 27, 33, 0.73);
+  color: var(--gold-bright);
+  cursor: pointer;
+}
+.icon-button svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sound-muted .sound-wave {
+  opacity: 0.15;
+}
+.language-toggle {
+  font-size: 9px;
+  font-weight: 800;
+  color: #bdebd8;
+}
+
+.jackpot-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin: 12px 0 8px;
+}
+.jackpot-card {
+  --jackpot-color: #70d0b0;
+  min-width: 0;
+  height: 53px;
+  padding: 3px 4px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  gap: 3px;
+  border: 1px solid color-mix(in srgb, var(--jackpot-color), transparent 44%);
+  border-radius: 10px 10px 6px 6px;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--jackpot-color), transparent 87%),
+    rgba(3, 17, 23, 0.85) 64%
+  );
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.1),
+    0 3px 12px rgba(0, 0, 0, 0.24);
+}
+.jackpot-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: var(--jackpot-color);
+  opacity: 0.9;
+  box-shadow: 0 0 8px var(--jackpot-color);
+}
+.jackpot-orbit {
+  position: absolute;
+  inset: auto auto -25px 50%;
+  width: 70px;
+  height: 42px;
+  transform: translateX(-50%);
+  border: 1px solid color-mix(in srgb, var(--jackpot-color), transparent 74%);
+  border-radius: 50%;
+}
+.jackpot-avatar {
+  z-index: 1;
+  width: 27px;
+  height: 30px;
+  flex: 0 0 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--jackpot-color), transparent 32%);
+  background: radial-gradient(
+    circle at 50% 35%,
+    color-mix(in srgb, var(--jackpot-color), transparent 76%),
+    rgba(3, 17, 23, 0.82)
+  );
+  box-shadow: 0 0 9px color-mix(in srgb, var(--jackpot-color), transparent 75%);
+}
+.jackpot-avatar svg {
+  width: 26px;
+  height: 28px;
+  overflow: visible;
+}
+.jackpot-info {
+  z-index: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+}
+.jackpot-label {
+  color: var(--jackpot-color);
+  font-size: 8px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--jackpot-color), transparent 56%);
+}
+.jackpot-value {
+  color: #fff3ce;
+  line-height: 1;
+  font:
+    13px "Marcellus",
+    Georgia,
+    serif;
+  text-shadow: 0 1px 9px color-mix(in srgb, var(--jackpot-color), transparent 48%);
+}
+.guardian-name {
+  max-width: 45px;
+  overflow: hidden;
+  color: rgba(231, 227, 194, 0.68);
+  font-size: 5px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.jackpot-card.is-lit {
+  animation: jackpot-glow 0.9s ease-in-out 2;
+}
+@keyframes jackpot-glow {
+  50% {
+    box-shadow:
+      inset 0 0 18px color-mix(in srgb, var(--jackpot-color), transparent 76%),
+      0 0 24px color-mix(in srgb, var(--jackpot-color), transparent 45%);
+    transform: translateY(-2px);
+  }
+}
+
+.wallet-row {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  align-items: center;
+  min-height: 52px;
+  padding: 4px 13px;
+  border: 1px solid rgba(236, 210, 142, 0.19);
+  border-radius: 12px;
+  background: linear-gradient(105deg, rgba(4, 22, 28, 0.9), rgba(17, 43, 48, 0.69), rgba(4, 22, 28, 0.92));
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.18),
+    inset 0 1px rgba(255, 255, 255, 0.04);
+}
+.wallet-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: 7px;
+  row-gap: 1px;
+}
+.wallet-bet {
+  justify-self: end;
+  text-align: right;
+}
+.eyebrow {
+  color: #b6c5bd;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.17em;
+}
+.wallet-card strong {
+  justify-self: end;
+  font:
+    17px/1 "Marcellus",
+    Georgia,
+    serif;
+  color: #fff2c8;
+  text-shadow: 0 0 12px rgba(254, 212, 113, 0.22);
+}
+.wallet-balance strong {
+  justify-self: start;
+}
+.wallet-currency {
+  grid-column: 1 / -1;
+  color: rgba(174, 202, 190, 0.68);
+  font-size: 6px;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+}
+.wallet-divider {
+  width: 1px;
+  height: 27px;
+  background: linear-gradient(transparent, rgba(240, 209, 125, 0.46), transparent);
+}
+
+.prompt-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  min-height: 29px;
+  color: #f5df9b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-shadow: 0 0 14px rgba(238, 205, 117, 0.38);
+}
+.prompt-flourish {
+  color: #8ed9be;
+  font-size: 12px;
+}
+.machine {
+  width: 100%;
+  position: relative;
+}
+.vessel-row {
+  height: 77px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: clamp(19px, 9vw, 46px);
+  padding: 0 8px 1px;
+  position: relative;
+  z-index: 2;
+}
+.pot-vessel {
+  --pot-color: #68d8ac;
+  width: 66px;
+  height: 76px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.45));
+}
+.pot-ember {
+  --pot-color: #ff8b69;
+}
+.pot-tide {
+  --pot-color: #78bbff;
+}
+.vessel-aura {
+  position: absolute;
+  width: 48px;
+  height: 23px;
+  bottom: 14px;
+  border-radius: 50%;
+  background: var(--pot-color);
+  opacity: 0.13;
+  filter: blur(13px);
+  transition:
+    opacity 0.25s,
+    transform 0.3s;
+}
+.vessel-art {
+  position: absolute;
+  bottom: 8px;
+  width: 58px;
+  height: 65px;
+  fill: rgba(10, 43, 45, 0.94);
+  stroke: color-mix(in srgb, var(--pot-color), #edca7b 52%);
+  stroke-width: 1.25;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--pot-color), transparent 45%));
+}
+.vessel-neck {
+  fill: rgba(23, 60, 59, 0.96);
+}
+.vessel-body {
+  fill: rgba(21, 59, 56, 0.96);
+}
+.vessel-rim {
+  fill: none;
+  stroke: color-mix(in srgb, var(--pot-color), #ffe8ac 42%);
+}
+.vessel-jewel {
+  fill: var(--pot-color);
+  stroke: #fff0b0;
+  stroke-width: 1;
+  filter: drop-shadow(0 0 5px var(--pot-color));
+}
+.vessel-tassel {
+  fill: none;
+  stroke: #ffe5a2;
+  stroke-width: 1.2;
+}
+.vessel-name {
+  position: absolute;
+  bottom: 0;
+  color: rgba(238, 223, 177, 0.78);
+  font-size: 6px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+.vessel-count {
+  position: absolute;
+  top: 2px;
+  color: #fff0b9;
+  font:
+    9px "Marcellus",
+    Georgia,
+    serif;
+  text-shadow: 0 0 8px var(--pot-color);
+}
+.pot-vessel.is-active .vessel-aura {
+  opacity: 0.48;
+  transform: scale(1.35);
+}
+.pot-vessel.is-active .vessel-art {
+  filter: drop-shadow(0 0 10px var(--pot-color));
+}
+.pot-vessel.is-level-up {
+  animation: vessel-jump 0.62s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes vessel-jump {
+  45% {
+    transform: translateY(-12px) scale(1.1);
+  }
+}
+
+.board-shell {
+  position: relative;
+  width: 100%;
+  height: clamp(204px, 31vh, 284px);
+  padding: 7px;
+  border: 1px solid rgba(255, 225, 146, 0.72);
+  border-radius: 16px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 228, 160, 0.23),
+    rgba(100, 67, 26, 0.5) 17%,
+    rgba(255, 228, 160, 0.18) 45%,
+    rgba(68, 45, 22, 0.75) 85%
+  );
+  box-shadow:
+    0 0 0 2px rgba(64, 41, 22, 0.94),
+    0 0 0 3px rgba(237, 192, 102, 0.52),
+    0 7px 26px rgba(0, 0, 0, 0.56),
+    0 0 28px rgba(241, 191, 86, 0.12),
+    inset 0 0 16px rgba(255, 229, 153, 0.12);
+}
+.board-shell::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 3px;
+  border: 1px solid rgba(255, 236, 174, 0.31);
+  border-radius: 12px;
+  pointer-events: none;
+}
+.board-glint {
+  position: absolute;
+  z-index: 2;
+  inset: 6px;
+  pointer-events: none;
+  border-radius: 11px;
+  background: linear-gradient(
+    118deg,
+    rgba(255, 255, 255, 0.1),
+    transparent 11%,
+    transparent 86%,
+    rgba(255, 255, 255, 0.04)
+  );
+}
+.pixi-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 10px;
+  background: radial-gradient(ellipse at 50% 44%, rgba(27, 78, 77, 0.95), rgba(6, 28, 37, 0.98) 76%);
+}
+.pixi-stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.board-corner {
+  position: absolute;
+  z-index: 3;
+  top: -7px;
+  color: #ffe7a0;
+  font-size: 13px;
+  line-height: 1;
+  text-shadow: 0 0 7px #edbd59;
+}
+.corner-left {
+  left: 9px;
+}
+.corner-right {
+  right: 9px;
+}
+.pot-progress-row {
+  display: grid;
+  grid-template-columns: 64px 1fr 56px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 8px 0;
+  color: #f2d98f;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+.pot-progress-row > span:first-child {
+  white-space: nowrap;
+}
+#pot-progress-caption {
+  color: rgba(222, 225, 196, 0.8);
+  text-align: right;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.pot-progress-track {
+  height: 5px;
+  position: relative;
+  overflow: visible;
+  border-radius: 99px;
+  border: 1px solid rgba(244, 219, 145, 0.3);
+  background: rgba(0, 15, 20, 0.75);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.8);
+}
+.pot-progress-track > span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #4bcd9e, #e8d778 58%, #ff9b59);
+  box-shadow: 0 0 8px rgba(106, 226, 179, 0.82);
+  transition: width 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.pot-progress-spark {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  top: 50%;
+  left: 0;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff4bd;
+  box-shadow: 0 0 8px #fff0ab;
+  transition: left 0.55s;
+}
+
+.status-row {
+  min-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 4px;
+}
+.win-copy {
+  color: rgba(231, 240, 221, 0.9);
+  font-size: 8px;
+  text-align: center;
+  letter-spacing: 0.045em;
+}
+.win-star {
+  display: inline-block;
+  margin-right: 6px;
+  color: #f8d985;
+  text-shadow: 0 0 8px #f2cf70;
+}
+.win-amount {
+  color: #fff2b1;
+  font:
+    18px "Marcellus",
+    Georgia,
+    serif;
+  text-shadow: 0 0 14px rgba(255, 216, 107, 0.55);
+}
+
+.control-deck {
+  margin-top: auto;
+  padding-top: 3px;
+  position: relative;
+  z-index: 1;
+}
+.control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+}
+.control-row-main {
+  display: grid;
+  grid-template-columns: minmax(42px, 1fr) minmax(48px, 1fr) minmax(92px, 1.9fr) minmax(40px, 0.86fr) minmax(
+      40px,
+      0.86fr
+    );
+  align-items: center;
+  min-height: 86px;
+}
+.utility-control {
+  min-width: 0;
+  height: 49px;
+  padding: 4px 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 0;
+  background: transparent;
+  color: rgba(224, 233, 216, 0.78);
+  cursor: pointer;
+  font-size: 6px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+.utility-control:active {
+  transform: scale(0.94);
+}
+.utility-control:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+.utility-icon {
+  color: #e8d290;
+  font-size: 18px;
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(243, 203, 112, 0.35);
+}
+.speed-control .utility-icon {
+  letter-spacing: -5px;
+  padding-right: 4px;
+}
+.bet-down .utility-icon,
+.bet-up .utility-icon {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(239, 211, 135, 0.46);
+  border-radius: 50%;
+  font-size: 15px;
+}
+.spin-button {
+  position: relative;
+  width: clamp(86px, 24vw, 112px);
+  height: clamp(86px, 24vw, 112px);
+  justify-self: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 4px;
+  border: 1px solid #e6cc73;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #f9ffe9;
+  background: radial-gradient(circle at 50% 30%, #95f6af 0%, #2dca79 33%, #128b56 71%, #075c41 100%);
+  box-shadow:
+    0 0 0 3px rgba(29, 80, 58, 0.9),
+    0 0 0 4px rgba(244, 210, 119, 0.62),
+    inset 0 2px 8px rgba(255, 255, 255, 0.58),
+    inset 0 -7px 12px rgba(0, 61, 44, 0.45),
+    0 6px 16px rgba(0, 0, 0, 0.44),
+    0 0 23px rgba(54, 218, 136, 0.22);
+  transition:
+    transform 0.12s,
+    filter 0.15s;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.spin-button::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgba(247, 244, 194, 0.49);
+  border-radius: 50%;
+}
+.spin-button:hover {
+  filter: brightness(1.09);
+}
+.spin-button:active,
+.spin-button.is-pressed {
+  transform: scale(0.94);
+  filter: brightness(1.15);
+}
+.spin-button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.5) brightness(0.72);
+}
+.spin-ring {
+  position: absolute;
+  inset: -7px;
+  border: 1px solid rgba(245, 222, 148, 0.24);
+  border-radius: 50%;
+  pointer-events: none;
+}
+.spin-text {
+  position: relative;
+  font:
+    15px/1 "Marcellus",
+    Georgia,
+    serif;
+  color: #fffbd8;
+  letter-spacing: 0.06em;
+  text-shadow:
+    0 1px 3px #075438,
+    0 0 11px rgba(255, 255, 204, 0.5);
+}
+.spin-button small {
+  z-index: 1;
+  position: relative;
+  font-size: 5px;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  color: rgba(246, 255, 223, 0.86);
+}
+.spin-button.is-spinning .spin-ring {
+  animation: spin-ring 1s linear infinite;
+  border-color: rgba(255, 239, 163, 0.75);
+}
+@keyframes spin-ring {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.control-row-secondary {
+  min-height: 51px;
+  margin-top: 2px;
+}
+.buy-feature-button {
+  min-width: 0;
+  width: 68%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border: 1px solid rgba(243, 198, 107, 0.65);
+  border-radius: 10px;
+  background: linear-gradient(120deg, rgba(108, 62, 36, 0.84), rgba(95, 49, 32, 0.94) 45%, rgba(44, 35, 34, 0.94));
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px rgba(255, 244, 190, 0.15);
+  color: #ffe0a0;
+  cursor: pointer;
+  text-align: left;
+}
+.buy-feature-button:active {
+  transform: translateY(1px) scale(0.99);
+}
+.buy-feature-button:disabled {
+  opacity: 0.45;
+  filter: grayscale(0.6);
+  cursor: not-allowed;
+}
+.buy-feature-button > span:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.buy-feature-button strong {
+  font:
+    11px "Marcellus",
+    Georgia,
+    serif;
+  letter-spacing: 0.13em;
+}
+.buy-feature-button small {
+  color: rgba(255, 225, 174, 0.68);
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+}
+.buy-star {
+  font-size: 17px;
+  color: #ffdc87;
+  text-shadow: 0 0 8px #fb9b55;
+}
+.buy-arrow {
+  margin-left: auto;
+  padding: 0 10px;
+  font-size: 19px;
+  color: #ffd98b;
+}
+.autoplay-button {
+  width: 27%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid rgba(169, 204, 189, 0.28);
+  border-radius: 10px;
+  background: rgba(4, 19, 25, 0.72);
+  color: rgba(227, 239, 221, 0.8);
+  cursor: pointer;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+}
+.autoplay-button.is-active {
+  color: #071a1d;
+  background: #e6cf89;
+  border-color: #fff0b9;
+}
+.autoplay-ring {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  font:
+    11px "Marcellus",
+    Georgia,
+    serif;
+}
+
+.responsible-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 22px;
+  margin-top: 5px;
+  color: rgba(197, 213, 199, 0.53);
+  font-size: 7px;
+  letter-spacing: 0.05em;
+  text-align: center;
+}
+.footer-seal {
+  color: rgba(235, 207, 130, 0.63);
+  font-size: 10px;
+}
+
+.game-dialog {
+  width: min(92vw, 430px);
+  max-height: min(83svh, 700px);
+  padding: 20px;
+  border: 1px solid rgba(248, 216, 133, 0.58);
+  border-radius: 18px;
+  color: var(--ink);
+  background: linear-gradient(150deg, rgba(18, 48, 52, 0.98), rgba(4, 18, 25, 0.99) 68%);
+  box-shadow:
+    0 25px 100px rgba(0, 0, 0, 0.75),
+    0 0 50px rgba(84, 216, 172, 0.12);
+}
+.game-dialog::backdrop {
+  background: rgba(1, 9, 13, 0.77);
+  backdrop-filter: blur(7px);
+}
+.dialog-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+.dialog-heading h2 {
+  margin: 4px 0 0;
+  font:
+    23px "Marcellus",
+    Georgia,
+    serif;
+  color: #fff0bf;
+}
+.dialog-close {
+  width: 31px;
+  height: 31px;
+  padding: 0;
+  border: 1px solid rgba(239, 215, 146, 0.38);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  color: #f2d78f;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+.dialog-tabs {
+  display: flex;
+  gap: 4px;
+  margin-top: 17px;
+  padding: 3px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: rgba(1, 14, 19, 0.68);
+}
+.dialog-tab {
+  flex: 1;
+  min-width: 68px;
+  padding: 9px 5px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #9db8ad;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 700;
+}
+.dialog-tab.is-active {
+  background: linear-gradient(120deg, rgba(81, 179, 143, 0.37), rgba(244, 211, 126, 0.18));
+  color: #fff0bc;
+  box-shadow: inset 0 0 0 1px rgba(237, 212, 143, 0.25);
+}
+.dialog-body {
+  max-height: min(56svh, 490px);
+  overflow: auto;
+  padding: 15px 2px 3px;
+  color: rgba(230, 239, 224, 0.85);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.paytable-list {
+  display: grid;
+  gap: 5px;
+}
+.paytable-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(3, 54px);
+  align-items: center;
+  gap: 6px;
+  padding: 7px 9px;
+  border: 1px solid rgba(207, 219, 182, 0.09);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.035);
+  font-size: 10px;
+}
+.paytable-row strong {
+  color: #f6d989;
+  text-align: right;
+}
+.paytable-header {
+  color: #9fbeaf;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+}
+.pay-symbol {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #f3ecd7;
+}
+.pay-gem {
+  width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: linear-gradient(140deg, rgba(243, 216, 136, 0.26), rgba(81, 177, 143, 0.16));
+  color: #f7dc8e;
+  font:
+    11px "Marcellus",
+    Georgia,
+    serif;
+}
+.rule-list {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+.rule-list li {
+  display: grid;
+  grid-template-columns: 25px 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.rule-icon {
+  color: #f1d17e;
+  font-size: 17px;
+}
+.history-list {
+  display: grid;
+  gap: 6px;
+}
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  font-size: 10px;
+}
+.history-row strong {
+  color: #f6d98c;
+}
+.settings-list {
+  display: grid;
+  gap: 10px;
+}
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  min-height: 37px;
+  padding: 4px 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 11px;
+}
+.setting-row select,
+.setting-row button {
+  max-width: 160px;
+  padding: 7px 9px;
+  border: 1px solid rgba(241, 212, 135, 0.28);
+  border-radius: 8px;
+  background: #102c32;
+  color: #f6e5b6;
+  font: inherit;
+}
+.switch {
+  width: 37px;
+  height: 21px;
+  position: relative;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.23);
+  border-radius: 20px;
+  background: #314448;
+  cursor: pointer;
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #c8d4c8;
+  transition:
+    transform 0.18s,
+    background 0.18s;
+}
+.switch[aria-checked="true"] {
+  background: #167859;
+  border-color: #5fdcad;
+}
+.switch[aria-checked="true"]::after {
+  transform: translateX(16px);
+  background: #e9ffbf;
+}
+.reset-button {
+  width: 100%;
+  margin-top: 9px;
+  padding: 9px;
+  border: 1px solid rgba(255, 155, 126, 0.35);
+  border-radius: 8px;
+  color: #ffc2a4;
+  background: rgba(118, 47, 39, 0.2);
+  cursor: pointer;
+  font-size: 10px;
+}
+.buy-dialog {
+  max-width: 390px;
+}
+.buy-confirm-copy {
+  margin: 19px 0 9px;
+  color: #f8e7b4;
+  font:
+    15px/1.5 "Marcellus",
+    Georgia,
+    serif;
+}
+.buy-meter-note {
+  color: rgba(210, 226, 211, 0.72);
+  font-size: 10px;
+  line-height: 1.6;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 21px;
+}
+.primary-button,
+.secondary-button {
+  padding: 10px 13px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+.primary-button {
+  border: 1px solid #ffe7a5;
+  color: #12271f;
+  background: linear-gradient(140deg, #ffe9a0, #deb75c);
+  box-shadow: 0 4px 14px rgba(231, 181, 80, 0.2);
+}
+.secondary-button {
+  border: 1px solid rgba(210, 225, 210, 0.2);
+  color: #ceded1;
+  background: rgba(255, 255, 255, 0.045);
+}
+.toast {
+  position: absolute;
+  z-index: 20;
+  bottom: calc(140px + var(--safe-bottom));
+  left: 50%;
+  max-width: calc(100% - 36px);
+  transform: translate(-50%, 14px);
+  opacity: 0;
+  pointer-events: none;
+  padding: 9px 13px;
+  border: 1px solid rgba(255, 221, 138, 0.45);
+  border-radius: 10px;
+  background: rgba(5, 25, 31, 0.94);
+  color: #fff0bd;
+  font-size: 10px;
+  box-shadow: 0 9px 24px rgba(0, 0, 0, 0.45);
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+.toast.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.big-win-overlay {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  text-align: center;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(243, 194, 80, 0.22), transparent 57%);
+}
+.big-win-overlay.is-visible {
+  animation: bigwin-in 0.4s ease-out forwards;
+}
+.big-win-overlay.is-fading {
+  animation: bigwin-out 0.45s ease-in forwards;
+}
+.big-win-title {
+  color: #fff3b6;
+  font:
+    clamp(30px, 10vw, 48px) "Marcellus",
+    Georgia,
+    serif;
+  letter-spacing: 0.1em;
+  text-shadow:
+    0 0 10px #f7c75f,
+    0 0 30px #e78d43,
+    0 3px 3px #432b24;
+}
+.big-win-count {
+  margin-top: 6px;
+  color: #fffaf0;
+  font:
+    24px "Marcellus",
+    Georgia,
+    serif;
+  text-shadow: 0 0 16px #ffd776;
+}
+@keyframes bigwin-in {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes bigwin-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (min-width: 700px) {
+  body {
+    background: radial-gradient(ellipse at 50% 38%, #183239, #040b0f 72%);
+  }
+  .game-shell {
+    min-height: min(100svh, 1080px);
+    border-left: 1px solid rgba(239, 202, 118, 0.12);
+    border-right: 1px solid rgba(239, 202, 118, 0.12);
+  }
+  .board-shell {
+    height: clamp(250px, 32vh, 320px);
+  }
+}
+@media (max-height: 760px) {
+  .game-shell {
+    padding-top: calc(7px + var(--safe-top));
+    padding-bottom: calc(7px + var(--safe-bottom));
+  }
+  .jackpot-strip {
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+  .jackpot-card {
+    height: 43px;
+  }
+  .prompt-row {
+    min-height: 24px;
+  }
+  .vessel-row {
+    height: 66px;
+  }
+  .pot-vessel {
+    transform: scale(0.89);
+    transform-origin: bottom center;
+  }
+  .board-shell {
+    height: clamp(190px, 27vh, 224px);
+  }
+  .status-row {
+    min-height: 31px;
+  }
+  .control-row-main {
+    min-height: 78px;
+  }
+  .spin-button {
+    width: 82px;
+    height: 82px;
+  }
+  .control-row-secondary {
+    min-height: 45px;
+  }
+}
+@media (max-width: 370px) {
+  .game-shell {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+  .demo-badge {
+    display: none;
+  }
+  .brand-copy strong {
+    font-size: 12px;
+  }
+  .jackpot-strip {
+    gap: 4px;
+  }
+  .jackpot-card {
+    height: 45px;
+  }
+  .control-row-main {
+    grid-template-columns: minmax(35px, 0.85fr) minmax(42px, 0.95fr) minmax(84px, 1.9fr) minmax(34px, 0.8fr) minmax(
+        34px,
+        0.8fr
+      );
+    gap: 2px;
+  }
+  .utility-control {
+    font-size: 5px;
+  }
+  .spin-button {
+    width: 82px;
+    height: 82px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

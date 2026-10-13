@@ -1,0 +1,40 @@
+{
+  "name": "bruma-de-jade-slot",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Bruma de Jade: Calderos del Alba — original mobile-first slot demo.",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "simulate": "tsx tools/simulate.ts",
+    "simulate:buy": "tsx tools/simulate-buy.ts",
+    "test:rtp": "tsx tools/simulate.ts --spins=10000000 --check",
+    "audio:generate": "node tools/generate-audio.cjs"
+  },
+  "dependencies": {
+    "gsap": "^3.14.2",
+    "howler": "^2.2.4",
+    "pixi.js": "^8.9.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/howler": "^2.2.12",
+    "@types/node": "^22.15.30",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.5",
+    "lamejs": "^1.2.1",
+    "prettier": "^3.5.3",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.34.1",
+    "vite": "^6.3.5",
+    "vitest": "^5.0.4"
+  }
+}
